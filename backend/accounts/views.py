@@ -4,6 +4,7 @@ from rest_framework.views import APIView
 from rest_framework import permissions
 from django.contrib import auth
 from user_profile.models import UserProfile
+from .serializers import UserSerializer
 from django.views.decorators.csrf import ensure_csrf_cookie, csrf_protect
 from django.utils.decorators import method_decorator
 
@@ -94,3 +95,26 @@ class GetCSRFToken(APIView):
 
     def get(self,request,format=None):
         return Response({ 'success': 'CSRF cookie set' })
+
+
+class DeleteAccountView(APIView):
+    def delete(self, request, format=None):
+        user = self.request.user
+
+        try:
+
+            user = User.objects.filter(id=user.id).delete()
+
+            return Response({ 'success': 'User deleted successfully!' })
+
+        except:
+            return Response({ 'error': 'Something went wrong when trying to delete User '})
+
+class GetUserView(APIView):
+    permissions.classes = (permissions.AllowAny, )
+
+    def get(self, request, format=None):
+        users = User.objects.all()
+
+        users = UserSerializer(users, many=True)
+        return Response(users.data)
