@@ -1,6 +1,6 @@
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from django.contrib.auth.models import User
+# from django.contrib.auth.models import User
 from .serializers import UserProfileSerializer
 from .models import UserProfile
 
@@ -11,7 +11,7 @@ class GetUserProfileView(APIView):
             username = user.username
 
             
-            user = User.objects.get(id=user.id)
+            # user = User.objects.get(id=user.id)
 
             user_profile = UserProfile.objects.get(user=user)
             user_profile = UserProfileSerializer(user_profile)
@@ -32,7 +32,7 @@ class UpdateUserProfileView(APIView):
             phone = data['phone']
             city = data['city']
 
-            user = User.objects.get(id=user.id)
+            # user = User.objects.get(id=user.id)
 
             UserProfile.objects.filter(user=user).update(first_name=first_name, last_name=last_name, phone=phone, city=city)
 

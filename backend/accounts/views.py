@@ -5,14 +5,15 @@ from rest_framework import permissions
 from django.contrib import auth
 from user_profile.models import UserProfile
 from .serializers import UserSerializer
-from django.views.decorators.csrf import ensure_csrf_cookie, csrf_exempt
+from django.views.decorators.csrf import ensure_csrf_cookie, csrf_protect
 from django.utils.decorators import method_decorator
 
-@method_decorator(csrf_exempt, name='dispatch')
+@method_decorator(csrf_protect, name='dispatch')
 class CheckAuthenticated(APIView):
     def get(self, request, format=None):
+        user = self.request.user
         try:
-            isAutenticated = User.is_authenticated
+            isAutenticated = user.is_authenticated
 
             if isAutenticated:
                 return Response({ 'isAuthenticated': 'success' })
@@ -21,7 +22,7 @@ class CheckAuthenticated(APIView):
         except:
             return Response({ 'error': "something went wrong when checking authentication status" })
 
-@method_decorator(csrf_exempt, name='dispatch')
+@method_decorator(csrf_protect, name='dispatch')
 class SignUpView(APIView):
     permission_classes = (permissions.AllowAny, )
 
@@ -42,12 +43,12 @@ class SignUpView(APIView):
                     else:
                         user = User.objects.create_user(username=username, password=password)
 
-                        user.save()
+                        # user.save()
 
                         user = User.objects.get(id=user.id)
 
-                        user_profile = UserProfile(user=user, first_name='', last_name='', phone='', city='')
-                        user_profile.save()
+                        user_profile = UserProfile.objects.create(user=user, first_name='', last_name='', phone='', city='')
+                        # user_profile.save()
 
                         return Response({ 'success': 'User created successfully' })
             else:
@@ -58,9 +59,9 @@ class SignUpView(APIView):
         
          
 
-@method_decorator(csrf_exempt, name='dispatch')
+@method_decorator(csrf_protect, name='dispatch')
 class LoginView(APIView):
-    permissions.classes = (permissions.AllowAny, )
+    permission_classes = (permissions.AllowAny, )
 
     def post(self, request, format=None):
         data = self.request.data
@@ -91,7 +92,7 @@ class LogoutView(APIView):
 
 @method_decorator(ensure_csrf_cookie, name='dispatch')    
 class GetCSRFToken(APIView):
-    permissions.classes = (permissions.AllowAny, )
+    permission_classes = (permissions.AllowAny, )
 
     def get(self,request,format=None):
         return Response({ 'success': 'CSRF cookie set' })
@@ -111,7 +112,7 @@ class DeleteAccountView(APIView):
             return Response({ 'error': 'Something went wrong when trying to delete User '})
 
 class GetUserView(APIView):
-    permissions.classes = (permissions.AllowAny, )
+    permission_classes = (permissions.AllowAny, )
 
     def get(self, request, format=None):
         users = User.objects.all()
