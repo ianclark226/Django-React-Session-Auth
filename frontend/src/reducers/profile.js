@@ -1,10 +1,8 @@
-/* eslint-disable no-unused-vars */
-/* eslint-disable import/no-anonymous-default-export */
 import {
+    LOAD_USER_PROFILE_SUCCESS,
     LOAD_USER_PROFILE_FAIL,
-    LOAD_USER_PROFILE_SUCCESS
-    
-    
+    UPDATE_USER_PROFILE_SUCCESS,
+    UPDATE_USER_PROFILE_FAIL
 } from '../actions/types';
 
 const initialState = {
@@ -15,11 +13,13 @@ const initialState = {
     city: ''
 };
 
+// eslint-disable-next-line import/no-anonymous-default-export
 export default function(state = initialState, action) {
     const { type, payload } = action;
 
     switch(type) {
         case LOAD_USER_PROFILE_SUCCESS:
+        case UPDATE_USER_PROFILE_SUCCESS:
             return {
                 ...state,
                 username: payload.username,
@@ -37,8 +37,11 @@ export default function(state = initialState, action) {
                 phone: '',
                 city: '',
             }
-
-            default:
-                return state
+        case UPDATE_USER_PROFILE_FAIL:
+            return {
+                ...state
+            }
+        default:
+            return state
     };
 };
