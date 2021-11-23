@@ -8,7 +8,6 @@ from .serializers import UserSerializer
 from django.views.decorators.csrf import ensure_csrf_cookie, csrf_protect
 from django.utils.decorators import method_decorator
 
-@method_decorator(csrf_protect, name='dispatch')
 class CheckAuthenticated(APIView):
     def get(self, request, format=None):
         user = self.request.user
@@ -43,12 +42,12 @@ class SignUpView(APIView):
                     else:
                         user = User.objects.create_user(username=username, password=password)
 
-                        # user.save()
+                        user.save()
 
                         user = User.objects.get(id=user.id)
 
                         user_profile = UserProfile.objects.create(user=user, first_name='', last_name='', phone='', city='')
-                        # user_profile.save()
+                        user_profile.save()
 
                         return Response({ 'success': 'User created successfully' })
             else:
@@ -75,7 +74,7 @@ class LoginView(APIView):
 
             if user is not None:
                 auth.login(request, user)
-                return Response({ 'success': 'User authenticated', 'username': username })
+                return Response({ 'success': 'User authenticated' })
             else :
                 return Response({ 'error': 'Error AUthenticating' })
         except:

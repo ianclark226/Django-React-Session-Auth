@@ -5,9 +5,54 @@ import {
     LOGIN_FAIL,
     LOGIN_SUCCESS,
     LOGOUT_FAIL,
-    LOGOUT_SUCCESS
+    LOGOUT_SUCCESS,
+    AUTHENTICATED_FAIL,
+    AUTHENTICATED_SUCCESS
 } from './types';
 import Cookies from 'js-cookie';
+import { load_user } from './profile';
+
+export const checkAuthenticated = () => async dispatch => {
+    const config = {
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json',
+            
+        }
+    };
+
+    
+
+    try {
+        const res = await axios.get(`${process.env.REACT_APP_API_URL}/accounts/authenticated`,  config);
+
+        if(res.data.error || res.data.isAuthenticated === 'error') {
+            dispatch({
+                type: AUTHENTICATED_FAIL,
+                payload: false
+            })
+        }
+        else if (res.data.isAuthenticated === 'success') {
+            dispatch({
+                type: AUTHENTICATED_SUCCESS,
+                payload: true
+            })
+        }
+        
+
+        else {
+            dispatch({
+                type: AUTHENTICATED_FAIL,
+                payload: false
+            })
+        }
+    } catch(err) {
+        dispatch({
+            type: AUTHENTICATED_FAIL,
+            payload: false
+        })
+    }
+};
 
 export const login = (username, password) => async dispatch => {
     const config = {
@@ -28,7 +73,7 @@ export const login = (username, password) => async dispatch => {
                 type: LOGIN_SUCCESS
             });
 
-            
+            dispatch(load_user());
         } else {
             dispatch({
                 type: LOGIN_FAIL
